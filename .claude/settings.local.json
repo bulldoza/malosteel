@@ -1,7 +1,9 @@
 {
   "permissions": {
     "allow": [
-      "WebFetch(domain:maloconstructions.com)"
+      "WebFetch(domain:maloconstructions.com)",
+      "Bash(magick --version)",
+      "Bash(convert --version)"
     ]
   }
 }
