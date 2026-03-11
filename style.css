@@ -1051,9 +1051,15 @@ ul { list-style: none; }
   margin-bottom: 4px;
 }
 
-.contact-item-text span {
+.contact-item-text span,
+.contact-item-text a {
   font-size: .95rem;
   color: rgba(255,255,255,.8);
+  text-decoration: none;
+}
+
+.contact-item-text a:hover {
+  color: #fff;
 }
 
 /* Contact form */
@@ -1147,29 +1153,6 @@ ul { list-style: none; }
   line-height: 1.7;
   margin-bottom: 24px;
   max-width: 240px;
-}
-
-.footer-socials {
-  display: flex;
-  gap: 10px;
-}
-
-.social-link {
-  width: 36px; height: 36px;
-  border-radius: var(--radius);
-  background: rgba(255,255,255,.06);
-  border: 1px solid rgba(255,255,255,.08);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: rgba(255,255,255,.5);
-  transition: all var(--transition);
-}
-
-.social-link:hover {
-  background: var(--orange);
-  border-color: var(--orange);
-  color: #fff;
 }
 
 .footer-col h4 {
