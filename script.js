@@ -92,13 +92,11 @@ if (leadForm) {
     btn.disabled = true;
     btn.innerHTML = 'Sending…';
 
-    const data = Object.fromEntries(new FormData(leadForm));
-
     try {
       await fetch('https://rankn8n.com/webhook/malosteel-lead', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
+        mode: 'no-cors',
+        body: new FormData(leadForm),
       });
       btn.innerHTML = 'Request Sent ✓';
       leadForm.reset();
