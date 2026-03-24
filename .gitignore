@@ -1,5 +1,4 @@
 #ignore documents
-
-Malosteel_1.pdf
-Malosteel.docx
-Prepared for.docx
+*.pdf
+*.docx
+*.zip

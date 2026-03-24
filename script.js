@@ -80,3 +80,32 @@ statNumbers.forEach(el => {
   el.style.transition = 'opacity .5s ease, transform .5s ease';
   statsObserver.observe(el);
 });
+
+// ===== LEAD FORM SUBMISSION =====
+const leadForm = document.getElementById('lead-form');
+if (leadForm) {
+  leadForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = leadForm.querySelector('.form-submit');
+    const originalText = btn.innerHTML;
+
+    btn.disabled = true;
+    btn.innerHTML = 'Sending…';
+
+    const data = Object.fromEntries(new FormData(leadForm));
+
+    try {
+      await fetch('https://rankn8n.com/webhook/malosteel-lead', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+      btn.innerHTML = 'Request Sent ✓';
+      leadForm.reset();
+    } catch (err) {
+      btn.disabled = false;
+      btn.innerHTML = originalText;
+      alert('Something went wrong. Please try again or call us directly.');
+    }
+  });
+}
