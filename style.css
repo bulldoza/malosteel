@@ -1098,6 +1098,18 @@ ul { list-style: none; }
   text-transform: uppercase;
 }
 
+.form-required {
+  color: var(--accent, #43B4D0);
+  font-weight: 700;
+}
+
+.form-optional {
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+  color: rgba(255,255,255,.3);
+}
+
 .form-group input,
 .form-group select,
 .form-group textarea {
@@ -1127,6 +1139,22 @@ ul { list-style: none; }
 .form-group textarea { resize: vertical; min-height: 100px; }
 
 .form-submit { width: 100%; justify-content: center; }
+
+.form-status {
+  min-height: 1.4em;
+  margin-top: 14px;
+  font-size: .9rem;
+  line-height: 1.5;
+  color: rgba(255,255,255,.72);
+}
+
+.form-status.is-error {
+  color: #fca5a5;
+}
+
+.form-status.is-success {
+  color: #86efac;
+}
 
 /* ===== FOOTER ===== */
 .footer {

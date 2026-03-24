@@ -84,26 +84,111 @@ statNumbers.forEach(el => {
 // ===== LEAD FORM SUBMISSION =====
 const leadForm = document.getElementById('lead-form');
 if (leadForm) {
+  const ALLOWED_WEBHOOK_HOSTS = new Set(['rankn8n.com']);
+  const FORM_TIMEOUT_MS = 10000;
+  const webhookUrl = (
+    leadForm.dataset.webhookUrl ||
+    leadForm.getAttribute('action') ||
+    ''
+  ).trim();
+  const statusEl = document.getElementById('form-status');
+
+  const setFormStatus = (message, type = '') => {
+    if (!statusEl) return;
+    statusEl.textContent = message;
+    statusEl.classList.remove('is-error', 'is-success');
+    if (type) {
+      statusEl.classList.add(type);
+    }
+  };
+
+  const validateLeadForm = () => {
+    const requiredFields = [
+      {
+        field: leadForm.querySelector('[name="name"]'),
+        message: 'Please enter your name.',
+      },
+      {
+        field: leadForm.querySelector('[name="email"]'),
+        message: 'Please enter a valid email address.',
+      },
+    ];
+
+    for (const { field, message } of requiredFields) {
+      if (!field || !field.checkValidity()) {
+        setFormStatus(message, 'is-error');
+        if (field) {
+          field.focus();
+        }
+        return false;
+      }
+    }
+
+    return true;
+  };
+
+  if (webhookUrl) {
+    leadForm.setAttribute('action', webhookUrl);
+  }
+
   leadForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const btn = leadForm.querySelector('.form-submit');
     const originalText = btn.innerHTML;
 
+    setFormStatus('');
+
+    if (!validateLeadForm()) {
+      return;
+    }
+
     btn.disabled = true;
-    btn.innerHTML = 'Sending…';
+    btn.innerHTML = 'Sending...';
+    setFormStatus('Sending your request...', '');
 
     try {
-      await fetch('https://rankn8n.com/webhook/malosteel-lead', {
-        method: 'POST',
-        mode: 'no-cors',
-        body: new FormData(leadForm),
-      });
-      btn.innerHTML = 'Request Sent ✓';
+      if (!webhookUrl) {
+        throw new Error('Missing webhook URL');
+      }
+
+      const parsedWebhookUrl = new URL(webhookUrl, window.location.href);
+      if (parsedWebhookUrl.protocol !== 'https:') {
+        throw new Error('Webhook URL must use HTTPS');
+      }
+
+      if (!ALLOWED_WEBHOOK_HOSTS.has(parsedWebhookUrl.hostname)) {
+        throw new Error('Webhook host is not allowed');
+      }
+
+      const controller = new AbortController();
+      const timeoutId = window.setTimeout(() => {
+        controller.abort();
+      }, FORM_TIMEOUT_MS);
+
+      try {
+        await fetch(webhookUrl, {
+          method: 'POST',
+          mode: 'no-cors',
+          body: new FormData(leadForm),
+          signal: controller.signal,
+        });
+      } finally {
+        window.clearTimeout(timeoutId);
+      }
+
+      btn.innerHTML = 'Request Sent';
+      btn.disabled = false;
       leadForm.reset();
+      setFormStatus('Thanks. Your request was sent and our team will follow up soon.', 'is-success');
     } catch (err) {
       btn.disabled = false;
       btn.innerHTML = originalText;
-      alert('Something went wrong. Please try again or call us directly.');
+      if (err.name === 'AbortError') {
+        setFormStatus('The request timed out. Please try again or call us directly.', 'is-error');
+        return;
+      }
+
+      setFormStatus('We could not submit your request. Please try again or call us directly.', 'is-error');
     }
   });
 }
